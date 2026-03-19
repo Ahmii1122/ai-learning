@@ -13,9 +13,9 @@ const generateToken = (id) => {
 
 export const register = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { username, email, password } = req.body;
 
-    const userExists = await User.findOne({ $or: [{ email }] });
+    const userExists = await User.findOne({ $or: [{ email }, { username }] });
 
     if (userExists) {
       return res.status(400).json({
@@ -27,13 +27,13 @@ export const register = async (req, res, next) => {
       });
     }
 
-    const user = await User.create({ name, email, password });
+    const user = await User.create({ username, email, password });
 
     const token = generateToken(user._id);
 
     res.status(201).json({
       success: true,
-      data: { user: { ...user._doc }, token, password: undefined },
+      data: { user: { ...user._doc, password: undefined }, token },
       message: "User registered successfully",
     });
   } catch (error) {

@@ -8,6 +8,7 @@ import {
   updateProfile,
   changePassword,
 } from "../controllers/authController.js";
+import { protect } from "../middleware/auth.js";
 
 const authRoutes = express.Router();
 
@@ -20,8 +21,9 @@ const registerValidation = [
     .withMessage("Username must be at least 3 characters long"),
   body("email")
     .trim()
-    .normalizeEmail()
-    .withMessage("Please provide a valid email address"),
+    .isEmail()
+    .withMessage("Please provide a valid email address")
+    .normalizeEmail(),
   body("password")
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters long"),
@@ -30,13 +32,14 @@ const registerValidation = [
 const loginValidation = [
   body("email")
     .trim()
+    .isEmail()
     .normalizeEmail()
     .withMessage("Please provide a valid email address"),
   body("password").notEmpty().withMessage("Password is required"),
 ];
 
 //Public routes
-authRoutes.post("/register", registerValidation, register);
+authRoutes.post("/register", ...registerValidation, register);
 authRoutes.post("/login", loginValidation, login);
 
 //Private routes
