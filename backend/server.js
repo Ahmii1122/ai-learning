@@ -1,12 +1,14 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
 import errorHandler from "./middleware/errorHandler.js";
 import connectDB from "./config/db.js";
 
 import authRoutes from "./routes/authRoutes.js";
+import documentRoutes from "./routes/documentRoutes.js";
 
 dotenv.config();
 
@@ -16,6 +18,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 connectDB();
+
+// Log every incoming request so API hits are visible in terminal
+app.use(morgan("dev"));
 
 app.use(
   cors({
@@ -34,6 +39,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 //routes
 
 app.use("/api/auth", authRoutes);
+app.use("/api/documents", documentRoutes);
 
 app.use(errorHandler);
 
