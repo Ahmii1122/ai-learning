@@ -191,14 +191,18 @@ Answer:
   }
 };
 
-export const explainConcept = async (explainConcept, context) => {
-  const prompt = `Explain the concept of ${concept} based on the following context.
-    Provide  a lear educational explanation that's easy to understand.
-    Include examples if relevant.
-    
-    Context:
-    ${context.substring(0, 10000)}
-    `;
+export const explainConcept = async (context, concept) => {
+  const prompt = `You are a document-grounded assistant.
+Only use the provided context to explain the concept.
+If the concept is not present in the context, reply exactly:
+"I could not find this concept in the selected document context."
+Do not use outside knowledge.
+
+Concept: ${concept}
+
+Context:
+${(context || "").substring(0, 10000)}
+`;
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-lite",

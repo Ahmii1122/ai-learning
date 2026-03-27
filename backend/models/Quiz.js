@@ -44,41 +44,40 @@ const quizSchema = new mongoose.Schema(
           enum: ["easy", "medium", "hard"],
           default: "medium",
         },
-
-        userAnswers: [
-          {
-            questionIndex: {
-              type: Number,
-              required: true,
-            },
-            selectedAnswer: {
-              type: String,
-              required: true,
-            },
-            isCorrect: {
-              type: Boolean,
-              required: true,
-            },
-            answeredAt: {
-              type: Date,
-              default: Date.now,
-            },
-          },
-        ],
-        score: {
-          type: Number,
-          default: 0,
-        },
-        totalQuestions: {
+      },
+    ],
+    userAnswers: [
+      {
+        questionIndex: {
           type: Number,
           required: true,
         },
-        completedAt: {
+        selectedAnswer: {
+          type: String,
+          required: true,
+        },
+        isCorrect: {
+          type: Boolean,
+          required: true,
+        },
+        answeredAt: {
           type: Date,
-          default: null,
+          default: Date.now,
         },
       },
     ],
+    score: {
+      type: Number,
+      default: 0,
+    },
+    totalQuestions: {
+      type: Number,
+      required: true,
+    },
+    completedAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true },
 );

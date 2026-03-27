@@ -140,26 +140,38 @@ export const findRelevantChunks = (chunks, query, maxChunks = 3) => {
     "nine",
     "ten",
   ]);
+  const queryNoiseWords = new Set([
+    "what",
+    "who",
+    "which",
+    "is",
+    "are",
+    "was",
+    "were",
+    "define",
+    "explain",
+    "about",
+    "tell",
+    "me",
+  ]);
 
   const queryWords = query
     .toLowerCase()
     .split(/\s+/)
-    .filter((word) => word.length > 2 && !stopWords.has(word));
+    .filter(
+      (word) =>
+        word.length > 1 &&
+        !stopWords.has(word) &&
+        !queryNoiseWords.has(word),
+    );
 
   if (queryWords.length === 0) {
-    return chunks.slice(0, maxChunks).map((chunk) => {
-      return {
-        content: chunk.content,
-        chunkIndex: chunk.chunkIndex,
-        pageNumber: chunk.pageNumber,
-        _id: chunk._id,
-      };
-    });
+    return [];
   }
 
   const scoredChunks = chunks.map((chunk, index) => {
     const content = chunk.content.toLowerCase();
-    const contentWords = content.split(/\s+/).length();
+    const contentWords = content.split(/\s+/).length;
     let score = 0;
 
     for (const word of queryWords) {
@@ -168,8 +180,10 @@ export const findRelevantChunks = (chunks, query, maxChunks = 3) => {
       ).length;
       score += exactMatches * 3;
 
-      const partialMatches = (content.match(new RegExp(word, "g")) || [])
-        .length;
+      const partialMatches =
+        word.length <= 2
+          ? exactMatches
+          : (content.match(new RegExp(word, "g")) || []).length;
       score += Math.max(0, partialMatches - exactMatches) * 1.5;
     }
     const uniqueWordsFound = queryWords.filter((word) =>
@@ -194,7 +208,7 @@ export const findRelevantChunks = (chunks, query, maxChunks = 3) => {
     };
   });
   return scoredChunks
-    .filter((chunk) => chunk.score > 0)
+    .filter((chunk) => chunk.score > 0 && chunk.matchedWords > 0)
     .sort((a, b) => {
       if (b.score !== a.score) {
         return b.score - a.score;
