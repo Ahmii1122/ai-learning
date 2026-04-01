@@ -5,8 +5,8 @@ import {
   submitQuiz,
   getQuizResults,
   deleteQuiz,
-} from "../controllers/quizController";
-import protect from "../middleware/auth.js";
+} from "../controllers/quizController.js";
+import { protect } from "../middleware/auth.js";
 
 const router = express.Router();
 
