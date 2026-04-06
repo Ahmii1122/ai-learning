@@ -59,7 +59,7 @@ const RegisterPage = () => {
     }
   };
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-400 to-slate-900 flex items-center justify-center px-4">
       <div className="w-full max-w-md my-4 border border-white/20 rounded-xl p-10">
         <div className="text-center mb-10 ">
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full mb-4 border border-white/20">
@@ -179,7 +179,7 @@ const RegisterPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold py-4 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]"
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-emerald-300 text-white font-semibold py-4 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]"
           >
             {loading ? (
               <>
@@ -200,7 +200,7 @@ const RegisterPage = () => {
             Already have an account?{" "}
             <Link
               to="/login"
-              className="text-blue-400 hover:text-blue-300 font-semibold transition-colors duration-300"
+              className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors duration-300"
             >
               Sign In
             </Link>
