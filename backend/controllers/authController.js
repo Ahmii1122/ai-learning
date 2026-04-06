@@ -18,9 +18,10 @@ export const register = async (req, res, next) => {
     const userExists = await User.findOne({ $or: [{ email }, { username }] });
 
     if (userExists) {
+      const isEmailMatch = userExists.email === email;
       return res.status(400).json({
         success: false,
-        error: userExists.email
+        error: isEmailMatch
           ? "Email already in use"
           : "Username already in use",
         statusCode: 400,
