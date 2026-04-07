@@ -1,10 +1,63 @@
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
 
 @theme {
+  --color-on-primary-fixed-variant: #274e3d;
+  --color-inverse-primary: #a5d0b9;
+  --color-on-primary: #ffffff;
+  --color-on-tertiary-container: #9fa9a3;
+  --color-secondary-container: #d7e7d8;
+  --color-secondary: #536257;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-bright: #f8f9fa;
+  --color-inverse-surface: #2e3132;
+  --color-surface-variant: #e1e3e4;
+  --color-surface-container-high: #e7e8e9;
+  --color-secondary-fixed: #d7e7d8;
+  --color-primary-container: #1b4332;
+  --color-on-error: #ffffff;
+  --color-tertiary-fixed-dim: #bfc9c3;
+  --color-surface-tint: #3f6653;
+  --color-tertiary-fixed: #dbe5df;
+  --color-surface-container-low: #f3f4f5;
+  --color-primary: #012d1d;
+  --color-on-tertiary-fixed-variant: #3f4945;
+  --color-on-background: #191c1d;
+  --color-tertiary: #1f2825;
+  --color-surface-container-highest: #e1e3e4;
+  --color-on-primary-container: #86af99;
+  --color-surface-container: #edeeef;
+  --color-inverse-on-surface: #f0f1f2;
+  --color-on-secondary-fixed-variant: #3c4a40;
+  --color-outline: #717973;
+  --color-on-surface: #191c1d;
+  --color-surface: #f8f9fa;
+  --color-on-tertiary: #ffffff;
+  --color-on-error-container: #93000a;
+  --color-surface-dim: #d9dadb;
+  --color-on-surface-variant: #414844;
+  --color-secondary-fixed-dim: #bbcbbd;
+  --color-on-secondary-fixed: #111e16;
+  --color-on-tertiary-fixed: #151d1a;
+  --color-on-secondary-container: #59685d;
+  --color-error: #ba1a1a;
+  --color-on-primary-fixed: #002114;
+  --color-error-container: #ffdad6;
+  --color-outline-variant: #c1c8c2;
+  --color-primary-fixed-dim: #a5d0b9;
+  --color-primary-fixed: #c1ecd4;
+  --color-background: #f8f9fa;
+  --color-on-secondary: #ffffff;
+  --color-tertiary-container: #353e3a;
+
+  --font-headline: "Newsreader", serif;
+  --font-body: "Inter", sans-serif;
+  --font-label: "Inter", sans-serif;
   --font-display: "Urbanist", sans-serif;
+
   --breakpoint-3xl: 1920px;
-  --color-primary: #ff9324;
 }
 
 @layer base {
