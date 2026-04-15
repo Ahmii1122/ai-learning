@@ -1,19 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  FileText,
-  Trash2,
-  BookOpen,
-  BrainCircuit,
-  Clock,
-  Underline,
-} from "lucide-react";
+import { FileText, Trash2, BookOpen, BrainCircuit, Clock } from "lucide-react";
 import moment from "moment";
 
 interface Props {
   document: any;
   onDelete: (id: string) => void;
-  onView: (id: string) => void;
+  onView?: (id: string) => void;
 }
 
 const formatFileSize = (bytes: number) => {
@@ -29,7 +22,7 @@ const formatFileSize = (bytes: number) => {
   }
   return `${size.toFixed(1)} ${units[unitIndex]}`;
 };
-const DocumentCard = ({ document, onDelete, onView }: Props) => {
+const DocumentCard = ({ document, onDelete }: Props) => {
   const navigate = useNavigate();
 
   const handleNavigateToDocument = () => {
@@ -53,7 +46,7 @@ const DocumentCard = ({ document, onDelete, onView }: Props) => {
           </div>
           <button
             onClick={handleDelete}
-            className="opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200"
+            className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 w-8 h-8 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200"
           >
             <Trash2 className="w-4 h-4" strokeWidth={2} />
           </button>

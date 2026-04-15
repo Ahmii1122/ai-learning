@@ -7,8 +7,17 @@ import Button from "../../components/common/Button";
 // import Spinner from "../../components/common/Spinner";
 import DocumentCard from "../../components/documents/DocumentCard";
 
+interface Document {
+  _id: string;
+  title: string;
+  fileSize?: number;
+  flashcardCount?: number;
+  quizCount?: number;
+  createdAt: string;
+}
+
 const DocumentListPage = () => {
-  const [documents, setDocuments] = useState([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [isUploadingModalOpen, setIsUploadingModalOpen] = useState(false);
@@ -79,11 +88,12 @@ const DocumentListPage = () => {
     if (!selectedDoc) return;
     setDeleting(true);
     try {
+      const docToDelete = documents.find((d) => d._id === selectedDoc);
       await documentService.deleteDocument(selectedDoc);
-      toast.success(`${selectedDoc.title} deleted successfully`);
+      toast.success(`${docToDelete?.title || "Document"} deleted successfully`);
       setIsDeleteModalOpen(false);
       setSelectedDoc(null);
-      setDocuments(documents.filter((doc: any) => doc._id !== selectedDoc));
+      setDocuments(documents.filter((doc) => doc._id !== selectedDoc));
     } catch (error) {
       toast.error("Failed to delete document");
     } finally {
@@ -129,7 +139,7 @@ const DocumentListPage = () => {
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {documents?.map((doc: any) => (
+        {documents?.map((doc) => (
           <DocumentCard
             key={doc._id}
             document={doc}
@@ -148,7 +158,7 @@ const DocumentListPage = () => {
 
       <div className="relative max-w-7xl mx-auto px-6 pt-10">
         {/* header */}
-        <div className="flex items-center justify-between mb-10">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10">
           <div>
             <h1 className="text-2xl font-medium text-slate-900 tracking-tight mb-2 ">
               My Documents
@@ -249,9 +259,8 @@ const DocumentListPage = () => {
                 >
                   {isUploading ? (
                     <span className="flex items-center justify-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin">
-                        Uploading...
-                      </div>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Uploading...
                     </span>
                   ) : (
                     "Upload"
@@ -259,6 +268,60 @@ const DocumentListPage = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="relative w-full max-w-lg bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-2xl shadow-slate-900/20 p-8 ">
+            <button
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200 "
+            >
+              <X className="w-5 h-5 cursor-pointer" strokeWidth={2.5} />
+            </button>
+            <div className="mb-6">
+              <div className="w-14 h-14 rounded-xl bg-linear-to-r from-red-100 to-pink-100 flex items-center justify-center">
+                <Trash2 className="w-7 h-7 text-red-600" strokeWidth={2} />
+              </div>
+              <h2 className="text-xl font-medium text-slate-900 tracking-tight">
+                Confirm Deletion
+              </h2>
+              <p className="text-slate-500 text-sm mt-1">
+                Are you sure you want to delete this document?
+                <span className="text-slate-700 font-medium">
+                  {" "}
+                  {documents.find((doc) => doc._id === selectedDoc)?.title}
+                </span>{" "}
+                This action cannot be undone.
+              </p>
+            </div>
+            <div className="flex pt-2 gap-3">
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="flex-1 h-11 px-4 border-2 border-slate-200 rounded-xl bg-white text-slate-700 text-sm font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed "
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={handleConfirmDelete}
+                className="flex-1 h-11 px-4 bg-linear-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-red-500/25 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+              >
+                {deleting ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Deleting...
+                  </span>
+                ) : (
+                  "Delete"
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
