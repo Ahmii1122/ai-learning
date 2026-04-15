@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import documentService from "../../services/documentService";
-// import Spinner from "../../components/common/Spinner";
+import Spinner from "../../components/common/Spinner";
 import toast from "react-hot-toast";
+import PageHeader from "../../components/common/PageHeader";
+import Tabs from "../../components/common/Tabs";
 import { ArrowLeft, ExternalLink, FileText } from "lucide-react";
+import ChatInterface from "../../components/chat/ChatInterface";
 
 interface Document {
   _id: string;
@@ -33,7 +36,7 @@ const DocumentDetailPage = () => {
   const { id } = useParams();
   const [document, setDocument] = useState<Document | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("Content");
+  const [activeTab, setActiveTab] = useState("content");
 
   useEffect(() => {
     const fetchDocumentDetails = async () => {
@@ -115,14 +118,14 @@ const DocumentDetailPage = () => {
             title={document.title}
             frameborder="0"
             className="w-full h-full"
-          ></iframe>
+          />
         </div>
       </div>
     );
   };
 
   const renderChat = () => {
-    return "renderChat";
+    return <ChatInterface />;
   };
   const renderAIActions = () => {
     return "renderAIActions";
@@ -174,7 +177,17 @@ const DocumentDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-8 pb-12">{renderContent()}</div>
+    <div className="">
+      <Link
+        to="/documents"
+        className="inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4 text-slate-600" />
+        Back to Documents
+      </Link>
+      <PageHeader title={document.title} />
+      <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
+    </div>
   );
 };
 export default DocumentDetailPage;
