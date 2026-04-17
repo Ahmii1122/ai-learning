@@ -7,7 +7,9 @@ import PageHeader from "../../components/common/PageHeader";
 import Tabs from "../../components/common/Tabs";
 import { ArrowLeft, ExternalLink, FileText } from "lucide-react";
 import ChatInterface from "../../components/chat/ChatInterface";
-
+import AIActionsTab from "../../components/documents/AIActionsTab";
+import FlashcardsTab from "../../components/documents/FlashcardsTab";
+import QuizzesTab from "../../components/documents/QuizzesTab";
 interface Document {
   _id: string;
   title: string;
@@ -128,15 +130,15 @@ const DocumentDetailPage = () => {
     return <ChatInterface />;
   };
   const renderAIActions = () => {
-    return "renderAIActions";
+    return <AIActionsTab documentId={id!} />;
   };
 
   const renderFlashcardsTab = () => {
-    return "renderFlashcardsTab";
+    return <FlashcardsTab documentId={id!} />;
   };
 
   const renderQuizzesTab = () => {
-    return "renderQuizzesTab";
+    return <QuizzesTab documentId={id!} />;
   };
 
   const tabs = [

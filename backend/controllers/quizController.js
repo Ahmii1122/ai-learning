@@ -68,13 +68,7 @@ export const submitQuiz = async (req, res, next) => {
       });
     }
 
-    if (quiz.completedAt) {
-      return res.status(400).json({
-        success: false,
-        message: "Quiz already completed",
-        statuscode: 400,
-      });
-    }
+
 
     let correctCount = 0;
     const userAnswers = [];

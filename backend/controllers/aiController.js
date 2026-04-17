@@ -144,31 +144,40 @@ export const generateSummary = async (req, res, next) => {
 
 export const chat = async (req, res, next) => {
   try {
-    const { documentId, question } = req.body;
+    const { documentId, message, question } = req.body;
+    const query = message || question;
 
-    if (!documentId || !question) {
+    if (!documentId || !query) {
       return res.status(400).json({
         success: false,
         statuscode: 400,
-        error: "Please Provide a valid document ID and question",
+        error: "Please Provide a valid document ID and a message or question",
       });
     }
 
     const document = await Document.findOne({
       _id: documentId,
       userId: req.user._id,
-      status: "ready",
-    });
+    }).lean();
+
     if (!document) {
       return res.status(404).json({
         success: false,
         statuscode: 404,
-        error: "Document not found or not ready for AI processing",
+        error: "Document not found",
       });
     }
 
-    const relevantChunks = findRelevantChunks(document.chunks, question, 3);
-    const chunkIndices = relevantChunks.map((c) => c.chunkIndex);
+    if (document.status !== "ready") {
+      return res.status(400).json({
+        success: false,
+        statuscode: 400,
+        error: `Document is not ready for AI processing (Current status: ${document.status})`,
+      });
+    }
+
+    const relevantChunks = findRelevantChunks(document.chunks, query);
+    const chunkIndices = relevantChunks.map((c) => c.chunkIndex).filter(c => c !== null && c !== undefined);
 
     let chatHistory = await ChatHistory.findOne({
       userId: req.user._id,
@@ -181,15 +190,12 @@ export const chat = async (req, res, next) => {
       });
     }
 
-    const answer = await geminiService.chatWithContext(
-      question,
-      relevantChunks,
-    );
+    const answer = await geminiService.chatWithContext(query, relevantChunks);
 
     chatHistory.messages.push(
       {
         role: "user",
-        content: question,
+        content: query,
         timestamp: new Date(),
         relevantChunks: [],
       },
@@ -206,7 +212,7 @@ export const chat = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: {
-        question,
+        question: query,
         answer,
         relevantChunks: chunkIndices,
         chatHistoryId: chatHistory._id,
@@ -234,7 +240,7 @@ export const explainConcept = async (req, res, next) => {
       _id: documentId,
       userId: req.user._id,
       status: "ready",
-    });
+    }).lean();
     if (!document) {
       return res.status(404).json({
         success: false,

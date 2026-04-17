@@ -56,7 +56,7 @@ const ChatInterface = () => {
       const response = await aiService.chat(documentId, userMessage.content);
       const assistantMessage = {
         role: "assistant",
-        content: response.data.message,
+        content: response.data.answer,
         timestamp: new Date(),
         relevantChunks: response.data.relevantChunks,
       };
@@ -75,7 +75,45 @@ const ChatInterface = () => {
   };
 
   const renderMessage = (msg: any, index: number) => {
-    return "renderMegssage";
+    const isUser = msg.role === "user";
+    return (
+      <div
+        key={index}
+        className={`flex items-start gap-3 my-6 ${isUser ? "flex-row-reverse" : "flex-row"}`}
+      >
+        {/* Avatar */}
+        <div
+          className={`shrink-0 w-9 h-9 rounded-full flex items-center justify-center shadow-sm ${
+            isUser
+              ? "bg-slate-200 text-slate-600 font-semibold text-sm"
+              : "bg-emerald-500 text-white"
+          }`}
+        >
+          {isUser ? (
+            user?.username?.charAt(0).toUpperCase() || "U"
+          ) : (
+            <Sparkles className="w-5 h-5" strokeWidth={2.5} />
+          )}
+        </div>
+
+        {/* Message Bubble */}
+        <div
+          className={`max-w-[80%] px-5 py-4 shadow-sm border ${
+            isUser
+              ? "bg-emerald-500 border-emerald-400 text-white rounded-2xl rounded-tr-none"
+              : "bg-white border-slate-200 text-slate-800 rounded-2xl rounded-tl-none"
+          }`}
+        >
+          {isUser ? (
+            <p className="text-sm leading-relaxed">{msg.content}</p>
+          ) : (
+            <div className="text-sm leading-relaxed">
+              <MarkdownRenderer content={msg.content} />
+            </div>
+          )}
+        </div>
+      </div>
+    );
   };
 
   if (initialLoading) {

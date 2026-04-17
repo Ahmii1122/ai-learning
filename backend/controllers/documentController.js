@@ -69,7 +69,8 @@ const processPDF = async (documentId, filePath) => {
 
     console.log(`Dcoument ${documentId} processed successfully`);
   } catch (error) {
-    console.error(`Error processing PDF for document ${documentId}:`, error);
+    console.error(`Error processing PDF for document ${documentId}:`);
+    console.error(error);
     await Document.findByIdAndUpdate(documentId, {
       status: "failed",
     });

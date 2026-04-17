@@ -90,7 +90,7 @@ export const chunkText = (text, chunkSize = 500, overlap = 50) => {
   return chunks;
 };
 
-export const findRelevantChunks = (chunks, query, maxChunks = 3) => {
+export const findRelevantChunks = (chunks, query, maxChunks = 5) => {
   if (!chunks || chunks.length === 0 || !query) return [];
 
   const stopWords = new Set([
@@ -153,70 +153,75 @@ export const findRelevantChunks = (chunks, query, maxChunks = 3) => {
     "about",
     "tell",
     "me",
+    "show",
+    "give",
+    "can",
+    "you",
+    "please",
   ]);
 
-  const queryWords = query
-    .toLowerCase()
+  // Clean the query: remove punctuation and split into words
+  const cleanQuery = query.toLowerCase().replace(/[^\w\s]/g, " ");
+  const queryWords = cleanQuery
     .split(/\s+/)
     .filter(
       (word) =>
-        word.length > 1 &&
-        !stopWords.has(word) &&
-        !queryNoiseWords.has(word),
+        word.length > 1 && !stopWords.has(word) && !queryNoiseWords.has(word),
     );
 
   if (queryWords.length === 0) {
-    return [];
+    // If all words were filtered, try again but keep the short/common words
+    const fallbackWords = cleanQuery.split(/\s+/).filter((w) => w.length > 1);
+    if (fallbackWords.length > 0) queryWords.push(...fallbackWords);
+    else return [];
   }
 
   const scoredChunks = chunks.map((chunk, index) => {
     const content = chunk.content.toLowerCase();
     const contentWords = content.split(/\s+/).length;
     let score = 0;
+    let matchedWordsCount = 0;
 
     for (const word of queryWords) {
-      const exactMatches = (
-        content.match(new RegExp(`\\b${word}\\b`, "g")) || []
-      ).length;
-      score += exactMatches * 3;
+      // Check for exact word match
+      const exactMatchRegex = new RegExp(`\\b${word}\\b`, "g");
+      const exactMatches = (content.match(exactMatchRegex) || []).length;
 
-      const partialMatches =
-        word.length <= 2
-          ? exactMatches
-          : (content.match(new RegExp(word, "g")) || []).length;
-      score += Math.max(0, partialMatches - exactMatches) * 1.5;
+      // Check for plural form too if search word is singular
+      const pluralMatchRegex = new RegExp(`\\b${word}s\\b`, "g");
+      const pluralMatches = (content.match(pluralMatchRegex) || []).length;
+
+      if (exactMatches > 0 || pluralMatches > 0) {
+        matchedWordsCount++;
+        score += exactMatches * 5 + pluralMatches * 4;
+      } else if (content.includes(word)) {
+        // Partial match
+        score += 2;
+      }
     }
-    const uniqueWordsFound = queryWords.filter((word) =>
-      content.includes(word),
-    ).length;
 
-    if (uniqueWordsFound > 1) {
-      score += uniqueWordsFound * 2;
+    if (matchedWordsCount > 0) {
+      // Bonus if chunk contains multiple different words from the query
+      score += matchedWordsCount * 3;
     }
-    const normalizedScore = score / Math.sqrt(contentWords);
 
-    const positionBonus = 1 - (index / chunks.length) * 0.1;
+    // Normalize by content length to avoid favoring huge chunks too much,
+    // but give a slight bias to longer chunks which might have more context
+    const normalizedScore = score / Math.log10(contentWords + 10);
+    const positionBonus = 1 - (index / chunks.length) * 0.15;
 
+    const chunkData = chunk.toObject ? chunk.toObject() : chunk;
     return {
-      content: chunk.content,
-      chunkIndex: chunk.chunkIndex,
-      pageNumber: chunk.pageNumber,
-      _id: chunk._id,
+      content: chunkData.content || chunkData.text || "",
+      chunkIndex: chunkData.chunkIndex !== undefined ? chunkData.chunkIndex : index,
+      pageNumber: chunkData.pageNumber || 1,
       score: normalizedScore * positionBonus,
-      rawScore: score,
-      matchedWords: uniqueWordsFound,
+      matchedWords: matchedWordsCount,
     };
   });
+
   return scoredChunks
-    .filter((chunk) => chunk.score > 0 && chunk.matchedWords > 0)
-    .sort((a, b) => {
-      if (b.score !== a.score) {
-        return b.score - a.score;
-      }
-      if (b.matchedWords !== a.matchedWords) {
-        return b.matchedWords - a.matchedWords;
-      }
-      return a.chunkIndex - b.chunkIndex;
-    })
+    .filter((chunk) => chunk.score > 0)
+    .sort((a, b) => b.score - a.score)
     .slice(0, maxChunks);
 };
